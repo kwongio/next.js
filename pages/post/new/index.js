@@ -1,32 +1,46 @@
+import {useForm} from "react-hook-form";
+import * as yup from "yup";
+import {yupResolver} from '@hookform/resolvers/yup';
 import React, {useState} from 'react';
-import {Button, Form, UserInput, Wrapper} from "@/styles/emotion";
+import {Button, Error, Form, UserInput, Wrapper} from "@/styles/styles";
 import axios from "axios";
 import {useRouter} from "next/router";
 
+
+const PostSchema = yup.object({
+    title: yup.string().required("필수값이다"), content: yup.string().required("필수값이다")
+});
+
 const PostWrite = () => {
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
+    const {register, handleSubmit, formState: {errors}} = useForm({resolver: yupResolver(PostSchema)});
+    const [error, setError] = useState("");
     const router = useRouter();
 
-    const onSubmitPost = async (event) => {
-        event.preventDefault();
+
+    const onClickSubmit = async (data) => {
         const jwt = localStorage.getItem("jwt");
-        await axios.post("/post/create", {title, content}, {
-            headers: {Authorization: jwt}
-        }).catch(res => {
-            alert(res.response.data.message);
-            router.push("/login");
-        });
+        try {
+            const res = await axios.post("/post/create", {
+                title: data.title, content: data.content
+            }, {
+                headers: {Authorization: jwt}
+            })
+            alert("글 등록이 완료되었습니다.");
+            await router.push(`/post/${res.data.id}`);
+        } catch (error) {
+            setError(error.response.data.message);
+        }
     }
 
     return (<Wrapper>
-        <h1>글 작성</h1>
-        <Form onSubmit={onSubmitPost}>
-            타이틀
-            <UserInput type={"text"} value={title} onChange={e => setTitle(e.target.value)}/>
-            콘텐트
-            <UserInput type={"text"} value={content} onChange={e => setContent(e.target.value)}/>
-            <Button type={"submit"}>글등록하기</Button>
+        <Form onSubmit={handleSubmit(onClickSubmit)}>
+            <h1>글 작성</h1>
+            <UserInput type="text" placeholder="title"  {...register("title")}/>
+            <Error>{errors.title?.message}</Error>
+            <UserInput type="text" placeholder="content" {...register("content")}/>
+            <Error>{errors.content?.message}</Error>
+            {error && <Error>{error}</Error>}
+            <Button>글등록하기</Button>
         </Form>
     </Wrapper>);
 };

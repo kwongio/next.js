@@ -1,15 +1,19 @@
-a {
+import {css} from "@emotion/react";
+
+export const globalStyle = css`
+  a {
     text-decoration: none;
-    color: white;
     margin-right: 10px;
     text-align: center;
-    background: orange;
     border-radius: 1em;
     padding: 10px;
-}
-body, html{
+  }
+
+  body, html {
     box-sizing: border-box;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
-    margin: 10px 100px;
-}
+    max-width: 1300px;
+    
+  }
+`

@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
+import {Wrapper} from "@/styles/styles";
+import Link from "next/link";
 
 const Main = () => {
     const [post, setPostList] = useState([]);
@@ -7,11 +9,20 @@ const Main = () => {
     useEffect(() => {
         axios.get("/posts").then((res) => setPostList(res.data.content));
     }, [])
-    return (<>
-        {post?.map(p => {
-            return <div key={p.id}>번호: {p.id} 제목: {p.title} 콘텐트: {p.content} </div>
-        })}
-    </>)
+
+    const deletePost = async (event) => {
+        await axios.delete(`/post/${event.target.id}`);
+        await axios.get("/posts").then((res) => setPostList(res.data.content));
+    }
+    return (<Wrapper>
+        {post?.map(p => (
+                <div key={p.id}>
+                    <Link href={`/post/${p.id}`}>{p.id}</Link>
+                    <button id={p.id} onClick={deletePost}>삭제</button>
+                </div>
+            )
+        )}
+    </Wrapper>);
 
 
 };

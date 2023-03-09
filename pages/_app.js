@@ -1,14 +1,20 @@
-import '../styles/globals.css'
 import axios from "axios";
-import NavBar from "../layout/NavBar";
-import Layout from "@/layout/Layout";
+import Layout from "@/src/components/units/layout/Layout";
+import {Global} from "@emotion/react";
+import {globalStyle} from "@/styles/globalStyle";
+import {RecoilRoot} from "recoil";
+import {Head} from "next/document";
 
 export default function App({Component, pageProps}) {
     axios.defaults.baseURL = "http://localhost:8080"
 
     return <>
-        <Layout>
-            <Component {...pageProps} />
-        </Layout>
+        <RecoilRoot>
+
+            <Global styles={globalStyle}/>
+            <Layout>
+                <Component {...pageProps} />
+            </Layout>
+        </RecoilRoot>
     </>
 }
