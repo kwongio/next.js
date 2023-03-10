@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {useRouter} from "next/router";
+import {Card} from "antd";
+import Link from "next/link";
 
 const Post = () => {
     const [post, setPost] = useState("");
@@ -24,7 +26,8 @@ const Post = () => {
         router.push(`/post/${event.target.id}/edit`)
     }
     return (
-        <div>
+
+        <Card key={post.id} title={post.title}  extra={<Link href={`/post/${post.id}`}>{post.id}번</Link>}>
             <div>{post?.id}</div>
             <div>{post?.title}</div>
             <div>{post?.content}</div>
@@ -34,7 +37,8 @@ const Post = () => {
             <div>{post.user?.username}</div>
             <div>{post.user?.fullName}</div>
             <button id={post.id} onClick={onClickMoveToEdit}>수정하기</button>
-        </div>
+        </Card>
+
     );
 };
 

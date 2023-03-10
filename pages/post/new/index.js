@@ -1,24 +1,22 @@
 import {useForm} from "react-hook-form";
-import * as yup from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
 import React, {useState} from 'react';
 import {Button, Error, Form, UserInput, Wrapper} from "@/styles/styles";
 import axios from "axios";
 import {useRouter} from "next/router";
+import {UseAuth} from "@/src/components/commons/hooks/useAuth";
+import {PostSchema} from "@/src/components/validation/validation";
 
 
-const PostSchema = yup.object({
-    title: yup.string().required("필수값이다"), content: yup.string().required("필수값이다")
-});
 
 const PostWrite = () => {
+    UseAuth();
     const {register, handleSubmit, formState: {errors}} = useForm({resolver: yupResolver(PostSchema)});
     const [error, setError] = useState("");
     const router = useRouter();
 
-
     const onClickSubmit = async (data) => {
-        const jwt = localStorage.getItem("jwt");
+        const jwt = sessionStorage.getItem("jwt");
         try {
             const res = await axios.post("/post/create", {
                 title: data.title, content: data.content
