@@ -2,13 +2,22 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {Wrapper} from "@/styles/styles";
 import Link from "next/link";
-import {Card} from "antd";
+import {Card, Pagination} from "antd";
 
 const Main = () => {
     const [post, setPostList] = useState([]);
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
     useEffect(() => {
-        axios.get("/posts").then((res) => setPostList(res.data.content));
-    }, [])
+        axios.get(`/posts?page=${page}`).then((res) => {
+            setPostList(res.data.content);
+            setTotal(res.data.totalElements);
+        });
+    }, [page]);
+
+    const onClickPage = (current) =>{
+        setPage(current);
+    }
 
     const deletePost = async (event) => {
         const jwt = sessionStorage.getItem("jwt");
@@ -29,6 +38,7 @@ const Main = () => {
                 </Card>
             )
         )}
+        <Pagination defaultCurrent={1} total={total} onChange={onClickPage}   />
     </Wrapper>);
 
 

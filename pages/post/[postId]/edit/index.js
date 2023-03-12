@@ -14,10 +14,14 @@ const Edit = () => {
     const [post, setPost] = useState("");
     const [error, setError] = useState("");
     const router = useRouter();
+    const [file, setFile] = useState(null);
     useEffect(() => {
         getPost();
     }, []);
 
+    const onChangeFile = (event) => {
+        setFile(event.target.files?.[0]);
+    }
     const getPost = async () => {
         try {
             await axios.get(`/post/${router.query.postId}`).then(res => setPost(res.data));
@@ -31,10 +35,16 @@ const Edit = () => {
     const onClickSubmit = async (data) => {
         const jwt = sessionStorage.getItem("jwt");
         try {
-            const res = await axios.put(`/post/${router.query.postId}`, {
+            const formData = new FormData();
+            const post = {
                 title: data.title,
                 content: data.content
-            }, {
+            }
+            formData.append("file", file);
+            const json = JSON.stringify(post);
+            const blob = new Blob([json], {type: "application/json"});
+            formData.append("post", blob);
+            const res = await axios.put(`/post/${router.query.postId}`, formData, {
                 headers: {Authorization: jwt}
             })
             alert("글 수정이 완료되었습니다.");
@@ -53,6 +63,7 @@ const Edit = () => {
             <UserInput type="text" placeholder="content" {...register("content")} defaultValue={post?.content}/>
             <Error>{errors.content?.message}</Error>
             {error && <Error>{error}</Error>}
+            <input type="file" onChange={onChangeFile} multiple/>
             <Button>글 수정하기</Button>
         </Form>
     </Wrapper>);

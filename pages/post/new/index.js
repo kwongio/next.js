@@ -16,6 +16,7 @@ const PostWrite = () => {
     const [file, setFile] = useState(null);
     const onChangeFile = (event) => {
         setFile(event.target.files?.[0]);
+
     }
     const onClickSubmit = async (data) => {
         const jwt = sessionStorage.getItem("jwt");
@@ -30,7 +31,7 @@ const PostWrite = () => {
             const blob = new Blob([json], {type: "application/json"});
             formData.append("post", blob);
             const res = await axios.post("/post/create", formData, {
-                headers: {"Content-Type": "multipart/form-data", Authorization: jwt}
+                headers: { Authorization: jwt}
             })
             alert("글 등록이 완료되었습니다.");
             await router.push(`/post/${res.data.id}`);
