@@ -37,7 +37,7 @@ export default function Home() {
 
 
     return (<Wrapper>
-            <h1>회원가입</h1>
+            <h1>회원가입 </h1>
             <Form onSubmit={handleSubmit(onClickSubmit)}>
                 <UserInput type="text" placeholder="username" {...register("username")}/>
                 <Error>{errors.username?.message}</Error>
