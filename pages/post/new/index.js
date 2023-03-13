@@ -42,7 +42,7 @@ const PostWrite = () => {
                 headers: {Authorization: jwt}
             })
             alert("글 등록이 완료되었습니다.");
-            // await router.push(`/post/${res.data.id}`);
+            await router.push(`/post/${res.data.id}`);
         } catch (error) {
             setError(error.response.data.message);
         }

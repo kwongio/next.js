@@ -4,6 +4,8 @@ import {useRouter} from "next/router";
 import {Card} from "antd";
 import Link from "next/link";
 import Image from "next/image";
+import Dompurify from 'dompurify'
+
 
 const Post = () => {
     const [post, setPost] = useState("");
@@ -28,10 +30,12 @@ const Post = () => {
     }
     return (
 
-        <Card key={post.id} title={post.title}  extra={<Link href={`/post/${post.id}`}>{post.id}번</Link>}>
+        <Card key={post.id} title={post.title} extra={<Link href={`/post/${post.id}`}>{post.id}번</Link>}>
             <div>{post?.id}</div>
             <div>{post?.title}</div>
-            <div>{post?.content}</div>
+            {typeof window !== "undefined" && (
+                <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(post?.content)}}/>)}
+
             <Image src={`/images/${post?.imageSaveName}`} width={200} height={200} alt={"이미지"}/>
             <div>{post?.imageSaveName}</div>
             <div>{post?.imageUrl}</div>
