@@ -6,7 +6,6 @@ import {useMoveToPage} from "@/src/components/commons/hooks/useMoveToPage";
 
 const NavBar = () => {
     const [jwt, setJwt] = useState("");
-    const {onClickMoveToPage} = useMoveToPage();
     const router = useRouter();
     useEffect(() => {
         setJwt(sessionStorage.getItem("jwt"));
@@ -24,6 +23,7 @@ const NavBar = () => {
                 {jwt ? <a href="#" onClick={onClickLogout}>로그아웃</a> : <Link href="/login">로그인</Link>}
                 {!jwt && <Link href="/join">회원가입</Link>}
                 <Link href="/post/new">글작성하기</Link>
+                <Link href="/kakaomap">카카오맵 이동</Link>
             </div>
         </NavBarWrapper>
     );
