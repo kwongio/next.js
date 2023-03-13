@@ -16,7 +16,7 @@ const Post = () => {
 
     const getPost = async () => {
         try {
-            await axios.get(`/post/${router.query.postId}`).then(res => setPost(res.data));
+            await axios.get(`/posts/${router.query.postId}`).then(res => setPost(res.data));
         } catch (error) {
             alert(error.response.data.message);
             await router.push("/")

@@ -6,17 +6,25 @@ import axios from "axios";
 import {useRouter} from "next/router";
 import {UseAuth} from "@/src/components/commons/hooks/useAuth";
 import {PostSchema} from "@/src/components/validation/validation";
+import dynamic from "next/dynamic";
+import 'react-quill/dist/quill.snow.css'
 
-
+const ReactQuill = dynamic(() => import("react-quill"), {ssr: false})
 const PostWrite = () => {
     UseAuth();
-    const {register, handleSubmit, formState: {errors}} = useForm({resolver: yupResolver(PostSchema)});
+    const {register, handleSubmit, setValue, trigger, formState: {errors}} = useForm({
+        resolver: yupResolver(PostSchema)
+    });
     const [error, setError] = useState("");
     const router = useRouter();
     const [file, setFile] = useState(null);
     const onChangeFile = (event) => {
         setFile(event.target.files?.[0]);
+    }
 
+    const onChangeContent = (value) => {
+        setValue("content", value);
+        void trigger("content");
     }
     const onClickSubmit = async (data) => {
         const jwt = sessionStorage.getItem("jwt");
@@ -31,10 +39,10 @@ const PostWrite = () => {
             const blob = new Blob([json], {type: "application/json"});
             formData.append("post", blob);
             const res = await axios.post("/post/create", formData, {
-                headers: { Authorization: jwt}
+                headers: {Authorization: jwt}
             })
             alert("글 등록이 완료되었습니다.");
-            await router.push(`/post/${res.data.id}`);
+            // await router.push(`/post/${res.data.id}`);
         } catch (error) {
             setError(error.response.data.message);
         }
@@ -45,7 +53,8 @@ const PostWrite = () => {
             <h1>글 작성</h1>
             <UserInput type="text" placeholder="title"  {...register("title")}/>
             <Error>{errors.title?.message}</Error>
-            <UserInput type="text" placeholder="content" {...register("content")}/>
+            content
+            <ReactQuill onChange={onChangeContent} theme="snow"/>
             <Error>{errors.content?.message}</Error>
             {error && <Error>{error}</Error>}
             <input type="file" onChange={onChangeFile} multiple/>
