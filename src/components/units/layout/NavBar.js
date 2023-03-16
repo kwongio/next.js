@@ -9,7 +9,7 @@ const NavBar = () => {
     const router = useRouter();
     useEffect(() => {
         setJwt(sessionStorage.getItem("jwt"));
-    })
+    });
 
     const onClickLogout = async () => {
         sessionStorage.removeItem("jwt");

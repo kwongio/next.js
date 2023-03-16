@@ -10,18 +10,18 @@ import {PostSchema} from "@/src/components/validation/validation";
 
 const Edit = () => {
     UseAuth();
-    const {register, handleSubmit, formState: {errors}} = useForm({resolver: yupResolver(PostSchema)});
+
     const [post, setPost] = useState("");
     const [error, setError] = useState("");
     const router = useRouter();
-    const [file, setFile] = useState(null);
+    const {register, handleSubmit, formState: {errors}} = useForm({resolver: yupResolver(PostSchema), defaultValues:{
+            title: post.title,
+            content: post.content
+        }},);
     useEffect(() => {
         getPost();
     }, []);
 
-    const onChangeFile = (event) => {
-        setFile(event.target.files?.[0]);
-    }
     const getPost = async () => {
         try {
             await axios.get(`/posts/${router.query.postId}`).then(res => setPost(res.data));
@@ -29,26 +29,20 @@ const Edit = () => {
             alert(error.response.data.message);
             await router.push("/")
         }
-
     }
 
     const onClickSubmit = async (data) => {
         const jwt = sessionStorage.getItem("jwt");
+        console.log(jwt);
         try {
-            const formData = new FormData();
-            const post = {
+            const res = await axios.post(`/post/${router.query.postId}`, {
                 title: data.title,
-                content: data.content
-            }
-            formData.append("file", file);
-            const json = JSON.stringify(post);
-            const blob = new Blob([json], {type: "application/json"});
-            formData.append("post", blob);
-            const res = await axios.put(`/posts/${router.query.postId}`, formData, {
+                content: data.content,
+            }, {
                 headers: {Authorization: jwt}
             })
             alert("글 수정이 완료되었습니다.");
-            await router.push(`/post/${res.data.id}`);
+            await router.push(`/post/${res.data}`);
         } catch (error) {
             setError(error.response.data.message);
         }
@@ -58,12 +52,11 @@ const Edit = () => {
     return (<Wrapper>
         <Form onSubmit={handleSubmit(onClickSubmit)}>
             <h1>글 수정</h1>
-            <UserInput type="text" placeholder="title"  {...register("title")} defaultValue={post?.title}/>
+            <UserInput type="text" placeholder="title"  {...register("title")} defaultValue={post.title}/>
             <Error>{errors.title?.message}</Error>
-            <UserInput type="text" placeholder="content" {...register("content")} defaultValue={post?.content}/>
+            <UserInput type="text" placeholder="content" {...register("content")} defaultValue={post.content}/>
             <Error>{errors.content?.message}</Error>
             {error && <Error>{error}</Error>}
-            <input type="file" onChange={onChangeFile} multiple/>
             <Button>글 수정하기</Button>
         </Form>
     </Wrapper>);

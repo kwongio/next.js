@@ -10,9 +10,11 @@ import Dompurify from 'dompurify'
 const Post = () => {
     const [post, setPost] = useState("");
     const router = useRouter();
+    const [load, setLoad] = useState(false);
 
     useEffect(() => {
         getPost();
+        setLoad(true);
     }, [])
 
 
@@ -21,7 +23,7 @@ const Post = () => {
             await axios.get(`/posts/${router.query.postId}`).then(res => setPost(res.data));
         } catch (error) {
             alert(error.response.data.message);
-            await router.push("/")
+            void router.push("/")
         }
 
     }
@@ -33,9 +35,7 @@ const Post = () => {
         <Card key={post.id} title={post.title} extra={<Link href={`/post/${post.id}`}>{post.id}번</Link>}>
             <div>{post?.id}</div>
             <div>{post?.title}</div>
-            {typeof window !== "undefined" && (
-                <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(post?.content)}}/>)}
-
+            {load && <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(post?.content)}}/>}
             <Image src={`/images/${post?.imageSaveName}`} width={200} height={200} alt={"이미지"}/>
             <div>{post?.imageSaveName}</div>
             <div>{post?.imageUrl}</div>

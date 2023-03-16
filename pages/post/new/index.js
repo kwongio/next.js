@@ -8,6 +8,7 @@ import {UseAuth} from "@/src/components/commons/hooks/useAuth";
 import {PostSchema} from "@/src/components/validation/validation";
 import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css'
+import Image from "next/image";
 
 const ReactQuill = dynamic(() => import("react-quill"), {ssr: false})
 const PostWrite = () => {
@@ -16,10 +17,25 @@ const PostWrite = () => {
         resolver: yupResolver(PostSchema)
     });
     const [error, setError] = useState("");
+    const [file, setFile] = useState("");
     const router = useRouter();
-    const [file, setFile] = useState(null);
+    const [prevImageUrl, setPrevImageUrl] = useState(null);
     const onChangeFile = (event) => {
-        setFile(event.target.files?.[0]);
+        const file = event.target.files?.[0];
+        if (!file) return;
+        console.log(file);
+        //임시 url 생성 내 브라우저에서만 가능
+        // const result = URL.createObjectURL(file);
+        // setImageUrl(result);
+        // console.log(result);
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = (event) => {
+            setPrevImageUrl(event.target?.result);
+            setFile(file);
+        }
+
+        // 다른 브라우저 에서 접근 가능
     }
 
     const onChangeContent = (value) => {
@@ -27,6 +43,7 @@ const PostWrite = () => {
         void trigger("content");
     }
     const onClickSubmit = async (data) => {
+        //먼저 스토리지에 이미지를 저장하고 주소를 받아와서 저장해야됨
         const jwt = sessionStorage.getItem("jwt");
         try {
             const formData = new FormData();
@@ -41,10 +58,9 @@ const PostWrite = () => {
             const res = await axios.post("/post/create", formData, {
                 headers: {Authorization: jwt}
             })
-            alert("글 등록이 완료되었습니다.");
-            await router.push(`/post/${res.data.id}`);
+            void router.push(`/post/${res.data}`);
         } catch (error) {
-            setError(error.response.data.message);
+            setFile(error.response.data.message);
         }
     }
 
@@ -56,8 +72,9 @@ const PostWrite = () => {
             content
             <ReactQuill onChange={onChangeContent} theme="snow"/>
             <Error>{errors.content?.message}</Error>
-            {error && <Error>{error}</Error>}
+            {file && <Error>{file}</Error>}
             <input type="file" onChange={onChangeFile} multiple/>
+            <img src={prevImageUrl} width={500} height={500}/>
             <Button>글등록하기</Button>
         </Form>
     </Wrapper>);

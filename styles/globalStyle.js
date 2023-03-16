@@ -14,6 +14,5 @@ export const globalStyle = css`
     margin: 0 auto;
     padding: 0;
     max-width: 1300px;
-    
   }
 `

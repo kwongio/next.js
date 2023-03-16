@@ -17,7 +17,7 @@ const Index = () => {
                 username: data.username, password: data.password
             });
             sessionStorage.setItem("jwt", response.headers["authorization"]);
-            await router.push("/");
+            void router.push("/");
         } catch (error) {
             setError("아이디 또는 비밀번호가 틀렸습니다.");
         }
