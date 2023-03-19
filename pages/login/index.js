@@ -5,7 +5,7 @@ import {Button, Error, Form, UserInput, Wrapper} from "@/styles/styles";
 import {useState} from "react";
 import {useRouter} from "next/router";
 import {LoginSchema} from "@/src/components/validation/validation";
-
+import Cookies from 'js-cookie'
 
 const Index = () => {
     const {register, handleSubmit, formState: {errors, isValid}} = useForm({resolver: yupResolver(LoginSchema)});

@@ -36,17 +36,11 @@ const Post = () => {
             <div>{post?.id}</div>
             <div>{post?.title}</div>
             {load && <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(post?.content)}}/>}
-            <Image src={`/images/${post?.imageSaveName}`} width={200} height={200} alt={"이미지"}/>
-            <div>{post?.imageSaveName}</div>
-            <div>{post?.imageUrl}</div>
-            <div>{post?.imageOriginalName}</div>
-            <div>{post?.mime}</div>
             <div>{post?.view}</div>
             <div>{post.user?.email}</div>
             <div>{post.user?.createAt}</div>
             <div>{post.user?.username}</div>
             <div>{post.user?.fullName}</div>
-
             <button id={post.id} onClick={onClickMoveToEdit}>수정하기</button>
         </Card>
 
