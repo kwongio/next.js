@@ -5,5 +5,5 @@ export const LoginSchema = yup.object({
 });
 
 export const PostSchema = yup.object({
-    title: yup.string().required("필수값이다"), contents: yup.string().required("필수값이다")
+    title: yup.string().required("필수값이다"), content: yup.string().required("필수값이다")
 });

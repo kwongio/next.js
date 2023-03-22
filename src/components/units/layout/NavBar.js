@@ -1,20 +1,30 @@
-import React, {useEffect, useState} from 'react';
 import {NavBarWrapper} from "@/styles/styles";
 import Link from "next/link";
 import {useRouter} from "next/router";
-import {useMoveToPage} from "@/src/components/commons/hooks/useMoveToPage";
+import {useRecoilState} from "recoil";
+import {accessTokenState} from "@/src/commons/recoil/recoil";
+import axios from "axios";
+import {useEffect} from "react";
+import Cookies from 'js-cookie';
 
 const NavBar = () => {
-    const [jwt, setJwt] = useState("");
+    const [jwt, setJwt] = useRecoilState(accessTokenState);
     const router = useRouter();
+    const getToken = async () => {
+        if (Cookies.get("refreshToken")) {
+            const response = await axios.get("/refresh");
+            setJwt(response.headers["authorization"]);
+        }
+    }
     useEffect(() => {
-        setJwt(sessionStorage.getItem("jwt"));
-    });
+        getToken();
+    }, []);
+
 
     const onClickLogout = async () => {
-        sessionStorage.removeItem("jwt");
         setJwt("");
-        await router.push("/")
+        Cookies.remove("refreshToken");
+        void router.push("/")
     }
     return (
         <NavBarWrapper>
@@ -30,3 +40,4 @@ const NavBar = () => {
 };
 
 export default NavBar;
+

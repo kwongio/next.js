@@ -5,43 +5,37 @@ import {Card} from "antd";
 import Link from "next/link";
 import Image from "next/image";
 import Dompurify from 'dompurify'
+import {useQuery} from "react-query";
+import {getPost} from "@/src/post/post.query";
 
 
-const Post = () => {
-    const [post, setPost] = useState("");
-    const router = useRouter();
+const Post = options => {
     const [load, setLoad] = useState(false);
+    const router = useRouter();
+    const postId = router.query.postId;
+    const {data} = useQuery(["post", postId], getPost(postId));
 
     useEffect(() => {
-        getPost();
         setLoad(true);
     }, [])
 
 
-    const getPost = async () => {
-        try {
-            await axios.get(`/posts/${router.query.postId}`).then(res => setPost(res.data));
-        } catch (error) {
-            alert(error.response.data.message);
-            void router.push("/")
-        }
-
-    }
     const onClickMoveToEdit = (event) => {
         router.push(`/post/${event.target.id}/edit`)
     }
+
     return (
 
-        <Card key={post.id} title={post.title} extra={<Link href={`/post/${post.id}`}>{post.id}번</Link>}>
-            <div>{post?.id}</div>
-            <div>{post?.title}</div>
-            {load && <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(post?.content)}}/>}
-            <div>{post?.view}</div>
-            <div>{post.user?.email}</div>
-            <div>{post.user?.createAt}</div>
-            <div>{post.user?.username}</div>
-            <div>{post.user?.fullName}</div>
-            <button id={post.id} onClick={onClickMoveToEdit}>수정하기</button>
+        <Card key={data?.id} title={data?.title} extra={<Link href={`/post/${data?.id}`}>{data?.id}번</Link>}>
+            <div>{data?.id}</div>
+            <div>{data?.title}</div>
+            {load && <div dangerouslySetInnerHTML={{__html: Dompurify.sanitize(data?.content)}}/>}
+            <div>{data?.view}</div>
+            <div>{data?.user.email}</div>
+            <div>{data?.user.createAt}</div>
+            <div>{data?.user.username}</div>
+            <div>{data?.user.fullName}</div>
+            <button id={data?.id} onClick={onClickMoveToEdit}>수정하기</button>
         </Card>
 
     );

@@ -1,13 +1,15 @@
 import React, {useEffect} from 'react';
 import {useRouter} from "next/router";
+import {useRecoilValue} from "recoil";
+import {accessTokenState} from "@/src/commons/recoil/recoil";
 
-export  const UseAuth = () => {
+export const UseAuth = () => {
     const router = useRouter();
+    const jwt = useRecoilValue(accessTokenState);
 
     useEffect(() => {
-        if(!sessionStorage.getItem("jwt")){
-            void router.replace("/login");
-            alert("로그인 후 이용가능합니다.");
+        if (!jwt) {
+            void router.replace("/");
         }
     }, [])
 };

@@ -3,7 +3,6 @@ import {css} from "@emotion/react";
 export const globalStyle = css`
   a {
     text-decoration: none;
-    margin-right: 10px;
     text-align: center;
     border-radius: 1em;
     padding: 10px;

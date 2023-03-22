@@ -3,45 +3,50 @@ import axios from "axios";
 import {Wrapper} from "@/styles/styles";
 import Link from "next/link";
 import {Card, Pagination} from "antd";
+import {dehydrate, QueryClient, useQuery, useQueryClient} from "react-query";
+import {useRecoilValue} from "recoil";
+import {accessTokenState} from "@/src/commons/recoil/recoil";
+import {getPostList} from "@/src/post/post.query";
 
-const Main = () => {
-    const [post, setPostList] = useState([]);
-    const [page, setPage] = useState(1);
-    const [total, setTotal] = useState(0);
+
+const Main = ({title}) => {
+    const jwt = useRecoilValue(accessTokenState);
+    const [currentPage, setCurrentPage] = useState(1);
+    const {data} = useQuery(["posts", currentPage], getPostList(currentPage), {keepPreviousData: true});
+    const queryClient = new useQueryClient();
+
     useEffect(() => {
-        axios.get(`/posts?page=${page}`).then((res) => {
-            setPostList(res.data.content);
-            setTotal(res.data.totalElements);
-        });
-    }, [page]);
+        const nextPage = currentPage + 1;
+        queryClient.prefetchQuery(["posts", nextPage], getPostList(nextPage));
+    }, [currentPage, queryClient])
 
-    const onClickPage = (current) =>{
-        setPage(current);
+    const onClickPage = (value) => {
+        setCurrentPage(value);
     }
 
     const deletePost = async (event) => {
-        const jwt = sessionStorage.getItem("jwt");
         try {
             await axios.delete(`/post/${event.target.id}`, {headers: {Authorization: jwt}});
             await axios.get("/posts").then((res) => setPostList(res.data.content));
             alert(`${event.target.id}번 삭제완료`);
         } catch (error) {
+            console.log(error);
             alert(error.response.data.message);
         }
-
     }
+    console.log(title);
+
+
     return (<Wrapper>
-        {post?.map(p => (
-                <Card key={p.id} title={p.title} extra={<Link href={`/post/${p.id}`}>{p.id}번</Link>}>
-                    <p>내용: {p.content}</p>
-                    <button id={p.id} onClick={deletePost}>삭제</button>
-                </Card>
-            )
-        )}
-        <Pagination defaultCurrent={1} total={total} onChange={onClickPage}   />
+        {data?.content?.map(p => (<Card key={p.id} title={p.title} extra={<Link href={`/post/${p.id}`}>{p.id}번</Link>}>
+            <p>내용: {p.content}</p>
+            <button id={p.id} onClick={deletePost}>삭제</button>
+        </Card>))}
+        <Pagination defaultCurrent={1} total={data?.totalElements} pageSize={10} onChange={onClickPage}/>
     </Wrapper>);
 
 
 };
 
 export default Main;
+
