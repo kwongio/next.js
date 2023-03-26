@@ -3,7 +3,7 @@ import axios from "axios";
 import {Wrapper} from "@/styles/styles";
 import Link from "next/link";
 import {Card, Pagination} from "antd";
-import {dehydrate, QueryClient, useQuery, useQueryClient} from "react-query";
+import {useQuery, useQueryClient} from "react-query";
 import {useRecoilValue} from "recoil";
 import {accessTokenState} from "@/src/commons/recoil/recoil";
 import {getPostList} from "@/src/post/post.query";
